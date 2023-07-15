@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.13;
 
+import "./VotingToken.sol";
+
 contract VotingCenter {
 
     //these 2 should be encrypted, private values
@@ -9,13 +11,20 @@ contract VotingCenter {
     
     uint256 public endTime;
 
-    address public votingToken;
+    address public owner;
+    VotingToken votingToken;
     
-    constructor(uint votingTime, address _votingToken) {
+    constructor(uint votingTime) {
         candidate1 = 0;
         candidate2 = 0;
         endTime = block.timestamp + votingTime;
-        votingToken = _votingToken;
+        votingToken = VotingToken(address(this));
+    }
+
+    //called by the backend script
+    function mint(address _to) public {
+        require(msg.sender == owner, "Only owner can mint");
+        votingToken.mint(_to);
     }
 
     function checkWinner() public view returns (string memory) {
@@ -27,11 +36,11 @@ contract VotingCenter {
         }
     }
 
-    //input should be encrypted
+    //input should be encrypted, called from the FE
     function vote(uint candidate) public {
         require(block.timestamp < endTime, "Voting is over");
         
-        //check if user has voting token, and transfer voting token to contract
+        //call VotingToken.transferFrom()
 
         if (candidate == 1) {
             candidate1++;
