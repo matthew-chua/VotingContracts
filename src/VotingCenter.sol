@@ -41,6 +41,7 @@ contract VotingCenter {
         require(block.timestamp < endTime, "Voting is over");
         
         //call VotingToken.transferFrom()
+        votingToken.transferFrom();
 
         if (candidate == 1) {
             candidate1++;
